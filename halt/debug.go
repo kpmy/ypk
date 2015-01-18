@@ -5,5 +5,5 @@ import (
 )
 
 func As(code int, msg ...interface{}) {
-	panic(fmt.Sprintln("halt:", code, fmt.Sprint(msg)))
+	panic(fmt.Sprintln("halt:", code, fmt.Sprint(msg...)))
 }
