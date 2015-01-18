@@ -4,6 +4,6 @@ import (
 	"fmt"
 )
 
-func As(code int) {
-	panic(fmt.Sprintln("halt:", code))
+func As(code int, msg ...interface{}) {
+	panic(fmt.Sprintln("halt:", code, msg))
 }
