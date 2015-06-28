@@ -2,6 +2,7 @@ package fn
 
 import (
 	"fmt"
+	"reflect"
 )
 
 type Maybe interface {
@@ -32,4 +33,9 @@ func MaybeString(ls ...string) (ret Maybe) {
 		ret = &mbn{}
 	}
 	return
+}
+
+func IsNil(a interface{}) bool {
+	defer func() { recover() }()
+	return a == nil || reflect.ValueOf(a).IsNil()
 }
