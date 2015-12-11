@@ -19,7 +19,7 @@ type catch struct {
 }
 
 type tc struct {
-	o   *sync.Once
+	sync.Once
 	fn  func(...interface{}) interface{}
 	par []interface{}
 	e   []catch
@@ -36,7 +36,7 @@ func (t *tc) Catch(e error, fn func(error)) Continue {
 }
 
 func (t *tc) Do(par ...interface{}) (ret interface{}) {
-	t.o.Do(func() {
+	t.Once.Do(func() {
 		defer func() {
 			if _x := recover(); _x != nil {
 				switch x := _x.(type) {
@@ -61,7 +61,6 @@ func (t *tc) Do(par ...interface{}) (ret interface{}) {
 						panic(x)
 					}
 				default:
-					err := errors.New(fmt.Sprint(_x))
 					var next func(error)
 					for _, c := range t.e {
 						if c.err == nil {
@@ -70,9 +69,10 @@ func (t *tc) Do(par ...interface{}) (ret interface{}) {
 						}
 					}
 					if next != nil {
+						err := errors.New(fmt.Sprint(_x))
 						next(err)
 					} else {
-						panic(err)
+						panic(_x)
 					}
 				}
 			}
@@ -95,7 +95,6 @@ func Try(fn func(...interface{}) interface{}, par ...interface{}) Continue {
 	ret := &tc{}
 	ret.fn = fn
 	ret.par = par
-	ret.o = &sync.Once{}
 	return ret
 }
 
