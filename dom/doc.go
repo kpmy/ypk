@@ -31,6 +31,7 @@ func Encode(el Element) io.Reader {
 
 type Entity interface {
 	Model() Element
+	Data() Text
 	Produce() io.Reader
 }
 
@@ -38,10 +39,15 @@ type domm struct {
 	header bool
 	rd     io.Reader
 	model  Element
+	data Text
 }
 
 func (x *domm) Type() string {
 	return x.model.Name()
+}
+
+func (x *domm) Data() Text {
+	return x.data
 }
 
 func (x *domm) Model() Element {
@@ -86,6 +92,8 @@ func (x *domm) Unmarshal() (err error) {
 			case xml.CharData:
 				if this != nil {
 					this.AppendChild(Txt(string(t)))
+				} else {
+					x.data = Txt(string(t))
 				}
 			case xml.EndElement:
 				if this != nil {
@@ -102,6 +110,9 @@ func (x *domm) Unmarshal() (err error) {
 			default:
 				halt.As(100, reflect.TypeOf(t))
 			}
+		} else if fn.IsNil(this) && err == io.EOF {
+			err = nil;
+			stop = true;
 		}
 	}
 	return

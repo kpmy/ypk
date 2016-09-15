@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"github.com/kpmy/ypk/assert"
+	"strings"
 )
 
 type (
@@ -97,7 +98,7 @@ func Txt(data string) Text {
 }
 
 func ThisName(n xml.Name) string {
-	if n.Space != "" {
+	if n.Space != "" && !strings.ContainsAny(n.Space, ":/") {
 		return n.Space + ":" + n.Local
 	} else {
 		return n.Local
